@@ -5,25 +5,17 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Unocss from 'unocss/vite'
-import {presetUno,presetAttributify, presetIcons } from 'unocss'
+import { presetUno, presetAttributify, presetIcons, DynamicRule } from 'unocss'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
     Unocss({
-      presets: [
-        presetUno(),
-        presetAttributify(),
-        presetIcons(),
-      ],
-      rules: [
-        [/^m-(\d)$/, ([, d]) => ({ margin: d + 'px' })],
-        [/^p-(\d)$/, ([,d]) => ({ padding: d +'px' })],
-      ]
+      presets: [presetUno(), presetAttributify(), presetIcons()],
     }),
     AutoImport({
-      resolvers: [ElementPlusResolver()]
+      resolvers: [ElementPlusResolver()],
     }),
     Components({
       resolvers: [ElementPlusResolver()],
