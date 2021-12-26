@@ -17,7 +17,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { addUIElement, UIElement } from '@/core/UIElement'
+import root from '@/core/root'
+import { addUIElement, moveUIElement, UIElement } from '@/core/UIElement'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
 import components from '../components'
@@ -41,17 +42,38 @@ function onLeave(e: DragEvent) {
   active.value = false
 }
 
+function findElement(id: string) {
+  const stack = [root.value]
+  while (stack.length > 0) {
+    const el = stack.pop()!
+    if (el.id === id) {
+      return el
+    } else {
+      stack.push(...el.children)
+    }
+  }
+}
+
 function onDrop(e: DragEvent) {
   active.value = false
-  const { x, y, desc } = JSON.parse(e.dataTransfer?.getData('data')!) as {
+  const { x, y, desc, id } = JSON.parse(e.dataTransfer?.getData('data')!) as {
     x: number,
     y: number,
-    desc: WidgetDesc
+    desc: WidgetDesc,
+    id: string
   }
-  if (desc.component in components) {
-    addUIElement(props.el, desc)
+  // 移动节点
+  if (id) {
+    const el = findElement(id)
+    if (el) {
+      moveUIElement(el, props.el)
+    }
   } else {
-    ElMessage.warning(desc.component + '控件还未实现，尽情期待')
+    if (desc.component in components) {
+      addUIElement(props.el, desc)
+    } else {
+      ElMessage.warning(desc.component + '控件还未实现，尽情期待')
+    }
   }
 }
 </script>

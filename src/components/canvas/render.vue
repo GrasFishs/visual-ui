@@ -1,71 +1,75 @@
-<template>
-  <DragArea v-if="flattenWidgetsDesc[el.component].area" :el="el" :style="style">
-    <component
-      @click.stop="current = el"
-      :class="{ _layout: !el.root, _active: !el.root && current === el }"
-      :is="widgets[el.component]"
-      :style="style"
-      v-bind="el.props"
-      v-on="el.on"
-    >
-      <render v-for="e in el.children" :el="e" :key="el.id" />
-    </component>
-  </DragArea>
-  <component
-    v-else
-    class="_box"
-    :class="{ _active: current === el }"
-    @click.stop="current = el"
-    :style="style"
-    :is="widgets[el.component]"
-    v-bind="el.props"
-    v-on="el.on"
-  >
-    <render v-for="e in el.children" :el="e" :key="el.id" />
-  </component>
-</template>
-<script lang="ts">
+<script lang="tsx">
 import widgets from '../widget/components'
-
-export default {
-  components: {
-    ...widgets
-  }
-}
-</script>
-
-<script lang="ts" setup>
 import { UIElement, UIElementProps } from '@/core/UIElement'
 import { computed } from 'vue'
 import DragArea from '../widget/common/drag-area.vue'
 import { current } from '@/core/root'
-import { flattenWidgetsDesc } from '../widget/desc'
-const props = defineProps<{ el: UIElement }>()
-defineExpose({
-  widgets,
-  flattenWidgetsDesc,
-  current
-})
+import Draggable from '../widget/common/draggable.vue'
 
-function getPx(attr: keyof UIElementProps) {
-  const v = props.el.props[attr].toString() as string
-  return v.match(/^\d+$/) ? v + 'px' : v
+export default {
+  name: 'render',
+  components: {
+    ...widgets,
+    Draggable,
+    DragArea
+  },
+  props: {
+    el: Object
+  },
+  setup(props: { el: UIElement }) {
+    const el = props.el
+
+    function getPx(attr: keyof UIElementProps) {
+      const v = el.props[attr].toString() as string
+      return v.match(/^\d+$/) ? v + 'px' : v
+    }
+
+    const style = computed(() => ({
+      ...(el.widget?.style || {}),
+      width: getPx('w'),
+      height: el.root ? '100%' : getPx('h'),
+      paddingLeft: getPx('pl'),
+      paddingRight: getPx('pr'),
+      paddingTop: getPx('pt'),
+      paddingBottom: getPx('pb'),
+      marginLeft: getPx('pl'),
+      marginRight: getPx('pr'),
+      marginTop: getPx('pt'),
+      marginBottom: getPx('pb'),
+      display: el.props.display,
+    }))
+
+    function onSelect(e: MouseEvent) {
+      e.stopPropagation()
+      current.value = el
+    }
+
+    function renderWidget() {
+      const node = widgets[el.component]
+      return <node
+        onClick={onSelect}
+        class={[!el.root && el.widget.area ? '_layout' : '_box', !el.root && current.value.id === el.id ? '_active' : '']}
+        style={style.value}
+        {...el.props}
+        {...el.on}
+      >
+        {el.children.map(e => <render el={e} key={e.id} />)}
+      </node>
+    }
+
+    function renderLayout() {
+      return <DragArea el={el} style={style.value}>
+        {renderWidget()}
+      </DragArea>
+    }
+
+    return () => el?.root
+      ? renderLayout()
+      : <Draggable widgetDesc={el.widget} el={el}>
+        {el.widget.area ? renderLayout() : renderWidget()}
+      </Draggable>
+  }
 }
-
-const style = computed(() => ({
-  ...(props.el.widget?.style || {}),
-  width: getPx('w'),
-  height: getPx('h'),
-  paddingLeft: getPx('pl'),
-  paddingRight: getPx('pr'),
-  paddingTop: getPx('pt'),
-  paddingBottom: getPx('pb'),
-  marginLeft: getPx('pl'),
-  marginRight: getPx('pr'),
-  marginTop: getPx('pt'),
-  marginBottom: getPx('pb'),
-  display: props.el.props.display,
-}))
 </script>
 
 <style lang="scss" scoped>

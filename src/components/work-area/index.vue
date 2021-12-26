@@ -1,6 +1,6 @@
 <template>
   <div class="w-240px h-100vh fixed bg-white z-5 flex-col">
-    <div class="flex mb-10px">
+    <div class="tabs flex mb-10px">
       <div
         class="flex items-center px-8px py-6px text-gray-400 cursor-pointer"
         :class="{ 'text-gray-500 font-bold bg-gray-100': current === i }"
@@ -37,3 +37,9 @@ const tabs = [{
   }
 }]
 </script>
+
+<style lang="scss">
+.tabs {
+  border-bottom: 1px solid #e2e2e2;
+}
+</style>

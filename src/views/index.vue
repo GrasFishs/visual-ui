@@ -12,14 +12,13 @@ import { delUIElement } from '@/core/UIElement'
 import { current } from '@/core/root'
 
 function onKeyUp(e: KeyboardEvent) {
-  if (e.code === 'Backspace') {
+  if (e.code === 'Backspace' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
     e.preventDefault()
     delUIElement(current.value)
   }
 }
 
 onMounted(() => {
-  console.log('123')
   window.addEventListener('keyup', onKeyUp)
 })
 

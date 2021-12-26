@@ -1,16 +1,20 @@
 <template>
-  <div draggable="true" @dragstart="onStart">
+  <component :is="isInline ? 'span' : 'div'" :class="[isInline ? 'inline-block' : '']" draggable="true" @dragstart.stop="onStart">
     <slot />
-  </div>
+  </component>
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { UIElement } from '@/core/UIElement'
+import { computed, reactive } from 'vue'
 import type { WidgetDesc } from '../desc'
 
 const props = defineProps<{
   widgetDesc: WidgetDesc
+  el?: UIElement
 }>()
+
+const isInline = computed(() => ['Text', 'Image'].includes(props.widgetDesc.component))
 
 const pos = reactive({
   x: 0,
@@ -24,7 +28,8 @@ function onStart(e: DragEvent) {
     e.dataTransfer.setData('data', JSON.stringify({
       x: pos.x,
       y: pos.y,
-      desc: props.widgetDesc
+      desc: props.widgetDesc,
+      id: props.el?.id ?? ''
     }))
   }
 }

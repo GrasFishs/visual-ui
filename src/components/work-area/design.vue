@@ -17,7 +17,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import groups from '../widget/desc'
+import groups, { WidgetDesc } from '../widget/desc'
 import Draggable from '../widget/common/draggable.vue'
 
 </script>

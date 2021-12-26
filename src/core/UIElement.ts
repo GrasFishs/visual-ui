@@ -1,5 +1,6 @@
 import components from '@/components/widget/components'
 import { WidgetDesc } from '@/components/widget/desc'
+import root, { current } from './root'
 
 type Components = typeof components
 
@@ -30,7 +31,7 @@ export interface UIElement {
   props: UIElementProps
   on: object
   children: UIElement[]
-  widget?: WidgetDesc
+  widget: WidgetDesc
 }
 
 export function getDefaultSizeProps(): UIElementProps {
@@ -49,13 +50,13 @@ export function getDefaultSizeProps(): UIElementProps {
   }
 }
 
-export function addUIElement(el: UIElement, desc: WidgetDesc) {
+export function createElement(parent: UIElement, desc: WidgetDesc) {
   const props: UIElementProps = {
     ...getDefaultSizeProps(),
     ...(desc.defaultProps || {})
   }
-  el.children.push({
-    parent: el,
+  return {
+    parent,
     component: desc.component,
     name: desc.name,
     id: Math.random().toString(36).slice(2),
@@ -63,10 +64,23 @@ export function addUIElement(el: UIElement, desc: WidgetDesc) {
     on: {},
     children: [],
     widget: desc
-  })
+  }
+}
+
+export function addUIElement(el: UIElement, desc: WidgetDesc) {
+  el.children.push(createElement(el, desc))
+}
+
+export function moveUIElement (el: UIElement, parent: UIElement) {
+  el.parent.children.splice(el.parent.children.indexOf(el), 1)
+  el.parent = parent
+  parent.children.push(el)
 }
 
 export function delUIElement(el: UIElement) {
+  if (current.value === el) {
+    current.value = root.value
+  }
   if (!el.root) {
     const p = el.parent
     p.children.splice(p.children.indexOf(el), 1)

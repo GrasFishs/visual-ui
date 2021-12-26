@@ -11,7 +11,8 @@ export default {
       description: '文本控件span',
       icon: 'i-ic-round-text-fields',
       defaultProps: {
-        text: '请输入文字'
+        text: '请输入文字',
+        display: 'inline-block'
       }
     },
     {

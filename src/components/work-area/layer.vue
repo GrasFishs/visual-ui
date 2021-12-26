@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div
+    v-if="root.children.length === 0"
+    class="text-center text-gray h-80% flex items-center justify-center"
+  >暂无元素</div>
+  <div v-else>
     <div
       class="hover:bg-gray-100 flex items-center px-6px py-4px"
       :class="{ 'bg-gray-200': el.id === current.id }"
@@ -23,7 +27,7 @@
 </template>
 <script lang="ts" setup>
 import type { UIElement } from '@/core/UIElement'
-import { current } from '@/core/root'
+import root, { current } from '@/core/root'
 import { onMounted, onUnmounted, ref, nextTick } from 'vue'
 
 defineProps<{

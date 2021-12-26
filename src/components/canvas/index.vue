@@ -35,7 +35,6 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, reactive } from 'vue'
-import DragArea from '../widget/common/drag-area.vue'
 import Render from './render.vue'
 import root from '@/core/root'
 

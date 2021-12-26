@@ -1,3 +1,5 @@
+import base from '@/components/widget/widgets/base'
+import layout from '@/components/widget/widgets/layout'
 import { ref } from 'vue'
 import { getDefaultSizeProps, UIElement } from './UIElement'
 
@@ -10,7 +12,8 @@ const root = ref<UIElement>({
   component: 'Layout',
   props: getDefaultSizeProps(),
   on: {},
-  children: []
+  children: [],
+  widget: layout.widgets.find(w => w.component === 'Layout')!
 })
 
 // @ts-ignore
