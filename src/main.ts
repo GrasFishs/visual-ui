@@ -4,5 +4,10 @@ import router from './router'
 import 'uno.css'
 import 'element-plus/dist/index.css'
 import 'normalize.css'
+import draggable from './components/widget/common/draggable'
 
-createApp(App).use(router).mount('#app')
+const app = createApp(App).use(router)
+
+app.directive('drag', draggable)
+
+app.mount('#app')

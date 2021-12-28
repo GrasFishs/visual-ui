@@ -12,10 +12,7 @@ export default {
       icon: 'i-ic-round-inbox',
       area: true,
       defaultProps: {
-
-      },
-      style: {
-        minHeight: '50px'
+        h: '50'
       }
     },
     {
@@ -25,8 +22,8 @@ export default {
       description: 'flex布局',
       icon: 'i-ic-round-move-to-inbox',
       area: true,
-      style: {
-        minHeight: '50px'
+      defaultProps: {
+        h: '50'
       }
     }
   ]

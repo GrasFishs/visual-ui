@@ -7,16 +7,14 @@
     <div
       class="actions fixed left-50% top-10px -translate-x-50% z-100 flex justify-center items-center"
     >
-      <input
-        type="number"
+      <NumInput
         class="outline-none border-none py-4px px-6px w-60px text-14px shadow"
-        v-model="size.width"
+        v-model:value="size.width"
       />
       <div class="i-ic-round-close mx-5px" />
-      <input
-        type="number"
+      <NumInput
         class="outline-none border-none py-4px px-6px w-60px text-14px shadow"
-        v-model="size.height"
+        v-model:value="size.height"
       />
       <button
         class="text-14px ml-2px border-none bg-blue text-white px-8px py-4px rounded"
@@ -28,7 +26,7 @@
       :style="{ width: size.width + 'px', height: size.height + 'px', left: pos.x + 'px', top: pos.y + 'px' }"
       class="bg-white shadow absolute"
     >
-      <Render :el="root" class="w-full h-full" />
+      <Render :el="root" class="w-full h-full pt-0.1px" />
       <div class="h-100px"></div>
     </div>
   </div>
@@ -37,16 +35,17 @@
 import { onMounted, ref, reactive } from 'vue'
 import Render from './render.vue'
 import root from '@/core/root'
+import NumInput from '../common/NumInput.vue'
 
 const size = reactive({
-  width: 750,
-  height: 1334
+  width: '750',
+  height: '1334'
 })
 
 const area = ref<HTMLDivElement>()
 
 const pos = reactive({
-  x: size.width / 2,
+  x: Number(size.width) / 2,
   y: 60,
   isGrabbing: false,
   isStart: false,
@@ -71,7 +70,7 @@ const pos = reactive({
     pos.isStart = false
   },
   reset: () => {
-    pos.x = size.width / 2
+    pos.x = Number(size.width) / 2
     pos.y = 50
   }
 })

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-50px">
+  <div class="flex">
     <slot />
   </div>
 </template>

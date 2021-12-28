@@ -7,6 +7,8 @@ type Components = typeof components
 type UIElementSizeProps = {
   w: string
   h: string
+  x: string
+  y: string
   pt: string
   pb: string
   pl: string
@@ -38,6 +40,8 @@ export function getDefaultSizeProps(): UIElementProps {
   return {
     w: '',
     h: '',
+    x: '',
+    y: '',
     pl: '',
     pr: '',
     pt: '',

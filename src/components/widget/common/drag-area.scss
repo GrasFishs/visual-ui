@@ -1,0 +1,18 @@
+@mixin dash-line($color) {
+  background: linear-gradient(90deg, $color 50%, transparent 0) repeat-x,
+    linear-gradient(90deg, $color 50%, transparent 0) repeat-x,
+    linear-gradient(0deg, $color 50%, transparent 0) repeat-y,
+    linear-gradient(0deg, $color 50%, transparent 0) repeat-y;
+  background-size: 8px 2px, 8px 2px, 2px 8px, 2px 8px;
+  background-position: 0 0, 0 100%, 0 0, 100% 0;
+}
+.drag-area-active {
+  @include dash-line(#94a3b8);
+  animation: move 0.3s infinite linear;
+}
+
+@keyframes move {
+  100% {
+    background-position: 8px 0, -8px 100%, 0 -8px, 100% 8px;
+  }
+}

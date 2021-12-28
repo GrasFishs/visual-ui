@@ -7,6 +7,6 @@
 <script lang="ts" setup>
 
 const props = defineProps<{
-  src: string
+  src?: string
 }>()
 </script>

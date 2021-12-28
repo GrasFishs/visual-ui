@@ -1,20 +1,22 @@
 <script lang="tsx">
 import widgets from '../widget/components'
 import { UIElement, UIElementProps } from '@/core/UIElement'
-import { computed } from 'vue'
-import DragArea from '../widget/common/drag-area.vue'
+import { computed, watch } from 'vue'
+import dragAreaDirective from '../widget/common/drag-area'
+import draggableDirective from '../widget/common/draggable'
 import { current } from '@/core/root'
-import Draggable from '../widget/common/draggable.vue'
 
 export default {
   name: 'render',
   components: {
-    ...widgets,
-    Draggable,
-    DragArea
+    ...widgets
   },
   props: {
     el: Object
+  },
+  directives: {
+    area: dragAreaDirective,
+    drag: draggableDirective
   },
   setup(props: { el: UIElement }) {
     const el = props.el
@@ -24,19 +26,30 @@ export default {
       return v.match(/^\d+$/) ? v + 'px' : v
     }
 
+    function getInnerSize() {
+      return {
+        width: el.props.w.toString().endsWith('%') ? '100%' : getPx('w'),
+        height: el.props.h.toString().endsWith('%') ? '100%' : getPx('h'),
+      }
+    }
+
     const style = computed(() => ({
       ...(el.widget?.style || {}),
-      width: getPx('w'),
-      height: el.root ? '100%' : getPx('h'),
+      ...getInnerSize(),
       paddingLeft: getPx('pl'),
       paddingRight: getPx('pr'),
       paddingTop: getPx('pt'),
       paddingBottom: getPx('pb'),
-      marginLeft: getPx('pl'),
-      marginRight: getPx('pr'),
-      marginTop: getPx('pt'),
-      marginBottom: getPx('pb'),
       display: el.props.display,
+    }))
+    
+    const outsideStyle = computed(() => ({
+      width: getPx('w'),
+      height: el.root ? '100%' : getPx('h'),
+      marginLeft: getPx('ml'),
+      marginRight: getPx('mr'),
+      marginTop: getPx('mt'),
+      marginBottom: getPx('mb'),
     }))
 
     function onSelect(e: MouseEvent) {
@@ -47,8 +60,9 @@ export default {
     function renderWidget() {
       const node = widgets[el.component]
       return <node
+        v-drag={[{ el, desc: el.widget }]}
         onClick={onSelect}
-        class={[!el.root && el.widget.area ? '_layout' : '_box', !el.root && current.value.id === el.id ? '_active' : '']}
+        class={['_box', current.value.id === el.id ? '_active' : '']}
         style={style.value}
         {...el.props}
         {...el.on}
@@ -58,20 +72,35 @@ export default {
     }
 
     function renderLayout() {
-      return <DragArea el={el} style={style.value}>
-        {renderWidget()}
-      </DragArea>
+      const node = widgets[el.component]
+      return <node
+        v-drag={[{ el, desc: el.widget }]}
+        v-area:arg={el}
+        onClick={onSelect}
+        class={`_layout ${current.value.id === el.id ? '_active' : ''}`}
+        style={{
+          ...style.value,
+          ...outsideStyle.value,
+        }}
+      >
+        {el.children.map(e => <render el={e} key={e.id} />)}
+      </node>
+    }
+
+    function renderRoot() {
+      const node = widgets[el.component]
+      return <node v-area:arg={el}>{el.children.map(e => <render el={e} key={e.id} />)}</node>
     }
 
     return () => el?.root
-      ? renderLayout()
-      : <Draggable widgetDesc={el.widget} el={el}>
-        {el.widget.area ? renderLayout() : renderWidget()}
-      </Draggable>
+      ? renderRoot()
+      : el.widget.area ? renderLayout() : renderWidget()
   }
 }
 </script>
-
+<style lang="scss">
+@import '../widget/common/drag-area.scss';
+</style>
 <style lang="scss" scoped>
 @mixin dash-line($color) {
   background: linear-gradient(90deg, $color 50%, transparent 0) repeat-x,
@@ -86,8 +115,10 @@ export default {
   @include dash-line(#0284c7);
 }
 
-.layout:hover,
-._active {
-  @include dash-line(#10b981);
+._layout {
+  @include dash-line(#cbd5e1);
+  &:hover, &._active {
+    @include dash-line(#10b981);
+  }
 }
 </style>
